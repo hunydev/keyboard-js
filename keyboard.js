@@ -485,6 +485,10 @@ class KeyBoard {
                 position: fixed;
                 z-index: 9999;
                 pointer-events: auto;
+                padding-top: 36px !important; /* X 버튼 공간 확보 */
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+                padding-bottom: 12px !important;
             }
             
             .tooltip-relative::after {
@@ -522,38 +526,56 @@ class KeyBoard {
                 min-width: 200px;
                 max-width: 400px;
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                padding: 36px 20px 20px 20px; /* 상단 여백 충분히 확보 */
             }
             
             .tooltip-close {
                 position: absolute;
-                top: -10px;
-                right: -10px;
-                width: 24px;
-                height: 24px;
-                border: 2px solid white;
-                border-radius: 50%;
-                background: #ff4757;
-                color: white;
-                font-size: 14px;
-                font-weight: bold;
+                top: 8px;
+                right: 8px;
+                width: 20px;
+                height: 20px;
+                border: none;
+                border-radius: 4px;
+                background: rgba(0, 0, 0, 0.1);
+                color: rgba(0, 0, 0, 0.6);
+                font-size: 16px;
+                font-weight: 300;
                 cursor: pointer;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 line-height: 1;
-                transition: all 0.2s ease;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                transition: all 0.15s ease;
                 z-index: 10001;
+                opacity: 0.7;
             }
             
             .tooltip-close:hover {
-                background: #ff3742;
-                transform: scale(1.15);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                background: rgba(0, 0, 0, 0.15);
+                color: rgba(0, 0, 0, 0.8);
+                opacity: 1;
+                transform: none;
             }
             
             .tooltip-close:active {
-                transform: scale(1.05);
+                background: rgba(0, 0, 0, 0.2);
+                transform: scale(0.95);
+            }
+            
+            /* 다크 테마 툴팁용 닫기 버튼 (relative 툴팁) */
+            .tooltip-relative .tooltip-close {
+                background: rgba(255, 255, 255, 0.2);
+                color: rgba(255, 255, 255, 0.8);
+            }
+            
+            .tooltip-relative .tooltip-close:hover {
+                background: rgba(255, 255, 255, 0.3);
+                color: rgba(255, 255, 255, 1);
+            }
+            
+            .tooltip-relative .tooltip-close:active {
+                background: rgba(255, 255, 255, 0.4);
             }
             
             @keyframes tooltipFadeIn {
