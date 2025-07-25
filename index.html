@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeyBoard.js - 가상 키보드 라이브러리 데모</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .demo-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .demo-section h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .keyboard-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        input[type="text"] {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .color-input {
+            width: 50px;
+            height: 35px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .info-box h4 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        
+        code {
+            background: #f1f1f1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .method-example {
+            background: #263238;
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        
+        /* 추가 코드 스타일링 */
+        .info-box pre {
+            margin: 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .info-box h4 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .info-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .info-box h4 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .info-box .method-example {
+            background: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .method-example {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 0;
+            margin: 0;
+            overflow-x: auto;
+        }
+        
+        .method-example code {
+            display: block;
+            padding: 20px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            background: transparent;
+            border: none;
+            white-space: pre;
+            overflow-x: auto;
+            
+            /* 신택스 하이라이팅 */
+            --comment-color: #6a737d;
+            --string-color: #032f62;
+            --keyword-color: #d73a49;
+            --function-color: #6f42c1;
+        }
+        
+        /* 간단한 신택스 하이라이팅 */
+        .method-example code::selection {
+            background: #b3d4fc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎹 KeyBoard.js</h1>
+        <p class="subtitle">가상 키보드 라이브러리 - 웹에서 키보드를 시각적으로 표현하세요!</p>
+        
+        <!-- 키보드가 렌더링될 영역 -->
+        <div class="keyboard-container">
+            <div id="keyboard-area" style="width:600px"></div>
+        </div>
+        
+        <!-- 데모 섹션 1: 기본 기능 -->
+        <div class="demo-section">
+            <h3>🎨 키 색상 변경 (mark)</h3>
+            <p>특정 키에 색상을 적용할 수 있습니다.</p>
+            <div class="controls">
+                <input type="text" id="markKey" placeholder="키 입력 (예: a, enter, f1)" value="a">
+                <input type="color" id="markColor" class="color-input" value="#ff6b6b">
+                <button onclick="markDemo()">키 색상 변경</button>
+                <button onclick="clearMarks()">색상 초기화</button>
+            </div>
+            <div class="method-example">
+kb.mark('a', '#ff6b6b');  // 'a' 키를 빨간색으로 표시
+            </div>
+        </div>
+        
+        <!-- 데모 섹션 2: 키 누름 효과 -->
+        <div class="demo-section">
+            <h3>⚡ 키 누름 효과 (press)</h3>
+            <p>키를 누른 듯한 시각적 효과를 줄 수 있습니다.</p>
+            <div class="controls">
+                <input type="text" id="pressKey" placeholder="키 입력 (예: space, ctrl)" value="space">
+                <input type="number" id="pressDelay" placeholder="지속시간(ms)" value="500" min="100" max="2000">
+                <button onclick="pressDemo()">키 누름 효과</button>
+            </div>
+            <div class="method-example">
+kb.press('space', 500);  // 스페이스 키를 500ms 동안 누름 효과
+            </div>
+        </div>
+        
+        <!-- 데모 섹션 3: 키 시퀀스 -->
+        <div class="demo-section">
+            <h3>🎬 키 시퀀스 효과 (flow)</h3>
+            <p>여러 키를 순서대로 누르는 효과를 만들 수 있습니다.</p>
+            <div class="controls">
+                <input type="text" id="flowKeys" placeholder="키 순서 (쉼표로 구분)" value="h,e,l,l,o">
+                <input type="number" id="flowDelay" placeholder="간격(ms)" value="300" min="100" max="1000">
+                <button onclick="flowDemo()">시퀀스 실행</button>
+                <button onclick="flowPresetDemo('hello')">HELLO 입력</button>
+                <button onclick="flowPresetDemo('keyboard')">KEYBOARD 입력</button>
+            </div>
+            <div class="method-example">
+kb.flow(['h','e','l','l','o'], { delay: 300, pressDelay: 200 });
+            </div>
+        </div>
+        
+        <!-- 새로운 고급 기능 데모 -->
+        <div class="demo-section">
+            <h3>🚀 고급 기능 데모</h3>
+            <div class="controls">
+                <button onclick="advancedMarkDemo()">🎨 고급 mark (배열 + 옵션)</button>
+                <button onclick="advancedPressDemo()">⚡ 고급 press (배열 + 옵션)</button>
+                <button onclick="eventListenerDemo()">📡 이벤트 리스너 테스트</button>
+                <button onclick="hideKeyboardDemo()">👻 키보드 숨기기 옵션</button>
+            </div>
+        </div>
+        
+        <!-- 키 숨김/복구 기능 데모 -->
+        <div class="demo-section">
+            <h3>🎭 키 숨김/복구 기능</h3>
+            <div class="controls">
+                <button onclick="hideKeysDemo()">🙈 키 숨김 (hide)</button>
+                <button onclick="showKeysDemo()">👁️ 키 보이기 (show)</button>
+                <button onclick="resetKeysDemo()">♾️ 전체 초기화 (reset)</button>
+                <button onclick="selectiveResetDemo()">🎯 선택적 초기화</button>
+                <button onclick="dynamicHideShowDemo()">🎪 동적 숨김/보이기</button>
+            </div>
+        </div>
+        
+        <!-- 미리 정의된 데모들 -->
+        <div class="demo-section">
+            <h3>🎪 미리 정의된 데모</h3>
+            <div class="controls">
+                <button onclick="rainbowDemo()">🌈 무지개 키보드</button>
+                <button onclick="gamingDemo()">🎮 게이밍 키보드 (WASD)</button>
+                <button onclick="typingDemo()">⌨️ 타이핑 시뮬레이션</button>
+                <button onclick="functionKeysDemo()">⚙️ 펑션키 하이라이트</button>
+            </div>
+        </div>
+        
+        <!-- 툴팁 데모 섹션 -->
+        <div class="demo-section">
+            <h3>💬 툴팁 데모</h3>
+            <div class="controls">
+                <button onclick="hoverTooltipDemo()">📍 호버 툴팁</button>
+                <button onclick="clickTooltipDemo()">👆 클릭 툴팁</button>
+                <button onclick="pressTooltipDemo()">👇 프레스 툴팁</button>
+                <button onclick="centerTooltipDemo()">🎯 중앙 툴팁</button>
+                <button onclick="htmlTooltipDemo()">🎨 HTML 툴팁</button>
+                <button onclick="multiTooltipDemo()">📝 다중 툴팁</button>
+                <button onclick="clearTooltips()">🗑️ 툴팁 제거</button>
+            </div>
+        </div>
+        
+        <!-- 향상된 Mark 데모 섹션 -->
+        <div class="demo-section">
+            <h3>✨ 향상된 Mark 데모</h3>
+            <div class="controls">
+                <button onclick="borderMarkDemo()">📲 테두리 마킹</button>
+                <button onclick="shadowMarkDemo()">🌅 그림자 마킹</button>
+                <button onclick="combinedMarkDemo()">🎆 조합 마킹</button>
+                <button onclick="rainbowMarkDemo()">🌈 레인보우 마킹</button>
+                <button onclick="clearMarks()">🌿 모든 마킹 제거</button>
+            </div>
+        </div>
+        
+        <!-- 선택적 마킹 제거 데모 -->
+        <div class="demo-section">
+            <h3>🎯 선택적 마킹 제거</h3>
+            <div class="controls">
+                <button onclick="selectiveMarkDemo()">🎨 다양한 마킹 적용</button>
+                <button onclick="clearSpecificMarks()">🔥 WASD만 제거</button>
+                <button onclick="clearNumberMarks()">🔢 숫자만 제거</button>
+                <button onclick="clearSingleMark()">🎯 Space만 제거</button>
+            </div>
+        </div>
+        
+        <!-- 사용법 안내 -->
+        <div class="info-box">
+            <h4>📚 사용법</h4>
+            <pre class="method-example"><code class="language-javascript">// 1. 키보드 생성
+const kb = new KeyBoard('#keyboard-area');
+
+// 2. 키에 색상 적용
+kb.mark('a', '#ff6b6b');        // 빨간색
+kb.mark('enter', '#4ecdc4');    // 청록색
+
+// 3. 키 누름 효과
+kb.press('space', 300);         // 300ms 동안 누름 효과
+
+// 4. 키 시퀀스 실행
+kb.flow(['h','e','l','l','o'], {
+    delay: 200,      // 키 사이 간격
+    pressDelay: 150  // 각 키 누름 지속시간
+});
+
+// 5. 툴팁 추가
+kb.tooltip('a', { position: 'relative', on: 'hover' }, '키 정보');
+kb.tooltip(['w','a','s','d'], { on: 'click' }, 'WASD 이동키');
+
+// 6. 향상된 마킹 (테두리+그림자)
+kb.mark('space', {
+    backgroundColor: '#ff6b6b',
+    borderColor: '#ff5252',
+    shadowColor: '#f44336'
+});
+
+// 7. 마킹 제거 (선택적)
+kb.clearMarks();                   // 모든 마킹 제거
+kb.clearMarks('a');                // 특정 키만 제거
+kb.clearMarks(['w','a','s','d']);  // 배열 키들만 제거
+
+// 8. 전체 초기화 (마킹+툴팁+숨김 등)
+kb.reset();
+
+// 9. 키보드 제거
+kb.destroy();</code></pre>
+        </div>
+    </div>
+
+    <script src="keyboard.js"></script>
+    <script>
+        // 키보드 인스턴스 생성
+        let kb;
+        
+        // 페이지 로드 시 키보드 초기화
+        window.addEventListener('DOMContentLoaded', function() {
+            kb = new KeyBoard('#keyboard-area');
+        });
+        
+        // 키 색상 변경 데모
+        function markDemo() {
+            const key = document.getElementById('markKey').value.trim();
+            const color = document.getElementById('markColor').value;
+            if (key) {
+                kb.mark(key, color);
+            }
+        }
+        
+        // 색상 초기화
+        function clearMarks() {
+            kb.clearMarks(); // 마킹만 제거
+        }
+        
+        // 키 누름 효과 데모
+        function pressDemo() {
+            const key = document.getElementById('pressKey').value.trim();
+            const delay = parseInt(document.getElementById('pressDelay').value);
+            if (key) {
+                kb.press(key, delay);
+            }
+        }
+        
+        // 키 시퀀스 데모
+        function flowDemo() {
+            const keysStr = document.getElementById('flowKeys').value.trim();
+            const delay = parseInt(document.getElementById('flowDelay').value);
+            if (keysStr) {
+                const keys = keysStr.split(',').map(k => k.trim());
+                kb.flow(keys, { delay: delay, pressDelay: 200 });
+            }
+        }
+        
+        // 미리 정의된 키 시퀀스
+        function flowPresetDemo(preset) {
+            const presets = {
+                'hello': ['h','e','l','l','o'],
+                'keyboard': ['k','e','y','b','o','a','r','d']
+            };
+            
+            if (presets[preset]) {
+                kb.flow(presets[preset], { delay: 250, pressDelay: 150 });
+            }
+        }
+        
+        // 무지개 키보드 데모
+        function rainbowDemo() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff'];
+            const letters = ['q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m'];
+            
+            letters.forEach((letter, index) => {
+                setTimeout(() => {
+                    kb.mark(letter, colors[index % colors.length]);
+                }, index * 100);
+            });
+        }
+        
+        // 게이밍 키보드 데모 (WASD + 스페이스)
+        function gamingDemo() {
+            clearMarks();
+            const gamingKeys = [
+                { key: 'w', color: '#00ff00' },
+                { key: 'a', color: '#00ff00' },
+                { key: 's', color: '#00ff00' },
+                { key: 'd', color: '#00ff00' },
+                { key: 'space', color: '#ff0000' },
+                { key: 'shift', color: '#ffff00' },
+                { key: 'ctrl', color: '#ffff00' }
+            ];
+            
+            gamingKeys.forEach((item, index) => {
+                setTimeout(() => {
+                    kb.mark(item.key, item.color);
+                }, index * 150);
+            });
+        }
+        
+        // 타이핑 시뮬레이션
+        function typingDemo() {
+            const text = "keyboard.js";
+            const keys = text.split('');
+            
+            clearMarks();
+            kb.flow(keys, { delay: 200, pressDelay: 150 });
+        }
+        
+        // 펑션키 하이라이트
+        function functionKeysDemo() {
+            kb.clearMarks();
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd', '#98d8c8', '#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff'];
+            
+            for (let i = 1; i <= 12; i++) {
+                const key = 'f' + i;
+                const color = colors[(i - 1) % colors.length];
+                setTimeout(() => {
+                    kb.mark(key, color);
+                    kb.press(key, 100);
+                }, i * 100);
+            }
+        }
+        
+        // 툴팁 데모 함수들
+        function hoverTooltipDemo() {
+            clearTooltips();
+            kb.tooltip('w', { position: 'relative', on: 'hover' }, 'WASD 이동: 앞으로');
+            kb.tooltip('a', { position: 'relative', on: 'hover' }, 'WASD 이동: 왼쪽');
+            kb.tooltip('s', { position: 'relative', on: 'hover' }, 'WASD 이동: 뒤로');
+            kb.tooltip('d', { position: 'relative', on: 'hover' }, 'WASD 이동: 오른쪽');
+            alert('W, A, S, D 키에 마우스를 올려보세요!');
+        }
+        
+        function clickTooltipDemo() {
+            clearTooltips();
+            kb.tooltip(['enter', 'space', 'shift'], { position: 'relative', on: 'click' }, '클릭하면 닫을 수 있습니다!');
+            alert('Enter, Space, Shift 키를 클릭해보세요!');
+        }
+        
+        function pressTooltipDemo() {
+            clearTooltips();
+            kb.tooltip(['q', 'e', 'r'], { position: 'relative', on: 'press' }, '키를 누르는 동안만 표시됩니다');
+            alert('Q, E, R 키를 눌러보세요!');
+        }
+        
+        function centerTooltipDemo() {
+            clearTooltips();
+            kb.tooltip('ESC', { position: 'center', on: 'click' }, '<h3>중앙 툴팁</h3><p>화면 중앙에 표시되는 큰 툴팁입니다.</p>');
+            alert('ESC 키를 클릭해보세요!');
+        }
+        
+        function htmlTooltipDemo() {
+            clearTooltips();
+            const htmlContent = `
+                <div style="text-align: center;">
+                    <h4 style="margin: 0 0 8px 0; color: #007bff;">🚀 HTML 툴팁</h4>
+                    <p style="margin: 0 0 8px 0;">HTML과 CSS를 사용할 수 있습니다!</p>
+                    <div style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4); padding: 5px; border-radius: 3px; color: white; font-weight: bold;">스타일 적용 가능</div>
+                </div>
+            `;
+            kb.tooltip('tab', { position: 'relative', on: 'hover' }, htmlContent);
+            alert('Tab 키에 마우스를 올려보세요!');
+        }
+        
+        function multiTooltipDemo() {
+            clearTooltips();
+            const keys = ['1', '2', '3', '4', '5'];
+            keys.forEach((key, index) => {
+                const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7'];
+                const content = `<div style="color: ${colors[index]}; font-weight: bold;">숫자 ${key} 키</div>`;
+                kb.tooltip(key, { position: 'relative', on: 'hover' }, content);
+            });
+            alert('숫자 1-5 키에 마우스를 올려보세요!');
+        }
+        
+        function clearTooltips() {
+            // 모든 키의 툴팁을 제거하기 위해 reset 사용
+            kb.reset();
+        }
+        
+        // 향상된 Mark 데모 함수들
+        function borderMarkDemo() {
+            kb.clearMarks();
+            // 테두리 마킹 데모
+            kb.mark('w', { backgroundColor: '#e74c3c', borderColor: '#c0392b' });
+            kb.mark('a', { backgroundColor: '#3498db', borderColor: '#2980b9' });
+            kb.mark('s', { backgroundColor: '#2ecc71', borderColor: '#27ae60' });
+            kb.mark('d', { backgroundColor: '#f39c12', borderColor: '#e67e22' });
+            alert('WASD 키에 테두리 효과가 적용되었습니다!');
+        }
+        
+        function shadowMarkDemo() {
+            kb.clearMarks();
+            // 그림자 마킹 데모
+            kb.mark(['q', 'w', 'e'], { 
+                backgroundColor: '#9b59b6', 
+                shadowColor: '#8e44ad'
+            });
+            kb.mark(['a', 's', 'd'], { 
+                backgroundColor: '#e67e22', 
+                shadowColor: '#d35400'
+            });
+            alert('Q,W,E와 A,S,D 키에 그림자 효과가 적용되었습니다!');
+        }
+        
+        function combinedMarkDemo() {
+            kb.clearMarks();
+            // 조합 마킹 데모 (배경+테두리+그림자)
+            kb.mark('space', {
+                backgroundColor: '#ff6b6b',
+                color: 'white',
+                borderColor: '#ff5252',
+                shadowColor: '#ff1744'
+            });
+            kb.mark('enter', {
+                backgroundColor: '#4ecdc4',
+                color: 'white',
+                borderColor: '#26a69a',
+                shadowColor: '#00695c'
+            });
+            kb.mark(['shift'], {
+                backgroundColor: '#ffd54f',
+                color: '#333',
+                borderColor: '#ffb300',
+                shadowColor: '#ff8f00'
+            });
+            alert('Space, Enter, Shift 키에 전체 조합 효과가 적용되었습니다!');
+        }
+        
+        function rainbowMarkDemo() {
+            kb.clearMarks();
+            // 레인보우 마킹 데모
+            const rainbowKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+            const rainbowColors = [
+                { bg: '#ff6b6b', border: '#ff5252', shadow: '#f44336' }, // 빨간
+                { bg: '#ff9500', border: '#ff8f00', shadow: '#ff6f00' }, // 주황
+                { bg: '#ffd54f', border: '#ffb300', shadow: '#ff8f00' }, // 노랑
+                { bg: '#66bb6a', border: '#4caf50', shadow: '#388e3c' }, // 초록
+                { bg: '#42a5f5', border: '#2196f3', shadow: '#1976d2' }, // 파랑
+                { bg: '#5c6bc0', border: '#3f51b5', shadow: '#303f9f' }, // 남색
+                { bg: '#ab47bc', border: '#9c27b0', shadow: '#7b1fa2' }, // 보라
+                { bg: '#ec407a', border: '#e91e63', shadow: '#c2185b' }, // 분홍
+                { bg: '#26a69a', border: '#009688', shadow: '#00695c' }, // 청록
+                { bg: '#8d6e63', border: '#795548', shadow: '#5d4037' }  // 갈색
+            ];
+            
+            rainbowKeys.forEach((key, index) => {
+                const colors = rainbowColors[index];
+                setTimeout(() => {
+                    kb.mark(key, {
+                        backgroundColor: colors.bg,
+                        borderColor: colors.border,
+                        shadowColor: colors.shadow,
+                        color: 'white'
+                    });
+                }, index * 100);
+            });
+            
+            alert('숫자 키에 레인보우 효과가 순차적으로 적용됩니다!');
+        }
+        
+        // 선택적 마킹 제거 데모 함수들
+        function selectiveMarkDemo() {
+            kb.clearMarks();
+            // 다양한 마킹 적용
+            kb.mark(['w', 'a', 's', 'd'], {
+                backgroundColor: '#e74c3c',
+                borderColor: '#c0392b',
+                shadowColor: '#a93226'
+            });
+            
+            kb.mark(['1', '2', '3', '4', '5'], {
+                backgroundColor: '#3498db',
+                borderColor: '#2980b9',
+                shadowColor: '#1f618d'
+            });
+            
+            kb.mark('space', {
+                backgroundColor: '#f39c12',
+                borderColor: '#e67e22',
+                shadowColor: '#d68910',
+                color: 'white'
+            });
+            
+            kb.mark(['q', 'e'], {
+                backgroundColor: '#9b59b6',
+                shadowColor: '#8e44ad'
+            });
+            
+            alert('다양한 그룹의 키들에 서로 다른 마킹이 적용되었습니다!');
+        }
+        
+        function clearSpecificMarks() {
+            // WASD 키만 마킹 제거
+            kb.clearMarks(['w', 'a', 's', 'd']);
+            alert('WASD 키의 마킹만 제거되었습니다!');
+        }
+        
+        function clearNumberMarks() {
+            // 숫자 키만 마킹 제거
+            kb.clearMarks(['1', '2', '3', '4', '5']);
+            alert('숫자 키의 마킹만 제거되었습니다!');
+        }
+        
+        function clearSingleMark() {
+            // Space 키만 마킹 제거
+            kb.clearMarks('space');
+            alert('Space 키의 마킹만 제거되었습니다!');
+        }
+        
+        // 고급 mark 데모 (배열 + 옵션)
+        function advancedMarkDemo() {
+            clearMarks();
+            
+            // 배열로 여러 키 동시에 마킹
+            kb.mark(['q', 'w', 'e', 'r'], {
+                backgroundColor: '#e74c3c',
+                color: '#ffffff'
+            });
+            
+            // 다른 색상으로 다른 키들 마킹
+            setTimeout(() => {
+                kb.mark(['a', 's', 'd', 'f'], {
+                    backgroundColor: '#2ecc71',
+                    color: '#000000'
+                });
+            }, 500);
+            
+            // 기본 색상으로 마킹 (자동 대비색)
+            setTimeout(() => {
+                kb.mark(['z', 'x', 'c', 'v']);
+            }, 1000);
+        }
+        
+        // 고급 press 데모 (배열 + 옵션)
+        function advancedPressDemo() {
+            // 여러 키 동시에 누름 효과
+            kb.press(['1', '2', '3', '4', '5'], {
+                pressDelay: 800,
+                triggerEvent: true
+            });
+            
+            // 연속으로 다른 키들 누름
+            setTimeout(() => {
+                kb.press(['q', 'w', 'e', 'r', 't'], {
+                    pressDelay: 400
+                });
+            }, 1000);
+        }
+        
+        // 이벤트 리스너 데모
+        function eventListenerDemo() {
+            clearMarks();
+            
+            // 'a' 키에 이벤트 리스너 등록
+            kb.onpress('a', function(key, element) {
+                console.log(`키 '${key}' 가 눌렸습니다!`);
+                alert(`키 '${key}' 가 눌렸습니다! (콘솔에서도 확인하세요)`);
+            });
+            
+            kb.onunpress('a', function(key, element) {
+                console.log(`키 '${key}' 가 떼어졌습니다!`);
+            });
+            
+            // 's' 키에도 이벤트 리스너 등록
+            kb.onpress('s', function(key, element) {
+                element.style.backgroundColor = '#f39c12';
+                element.style.transform = 'scale(1.1)';
+            });
+            
+            kb.onunpress('s', function(key, element) {
+                element.style.backgroundColor = '';
+                element.style.transform = '';
+            });
+            
+            // 안내 마킹
+            kb.mark(['a', 's'], {
+                backgroundColor: '#3498db',
+                color: '#ffffff'
+            });
+            
+            alert('a키와 s키를 클릭해보세요! 이벤트가 발생합니다.');
+        }
+        
+        // 키보드 숨기기 옵션 데모
+        function hideKeyboardDemo() {
+            // 기존 키보드 제거
+            if (kb) {
+                kb.destroy();
+            }
+            
+            // 옵션 선택 창
+            const options = {
+                hiddenEscape: confirm('ESC 키를 숨기시겠습니까?'),
+                hiddenFuntion: confirm('펑션키(F1~F12)를 숨기시겠습니까?'),
+                hiddenArrow: confirm('방향키를 숨기시겠습니까?')
+            };
+            
+            // 새로운 키보드 생성
+            kb = new KeyBoard('#keyboard-area', options);
+            
+            alert('키보드가 선택한 옵션에 따라 재생성되었습니다!');
+        }
+        
+        // 키 숨김 데모
+        function hideKeysDemo() {
+            // 여러 키를 배열로 숨김
+            kb.hide(['q', 'w', 'e', 'r', 't']);
+            
+            // 다른 키들도 숨김
+            setTimeout(() => {
+                kb.hide(['1', '2', '3', '4', '5']);
+            }, 500);
+            
+            // 단일 키 숨김
+            setTimeout(() => {
+                kb.hide('space');
+                kb.hide('enter');
+            }, 1000);
+            
+            alert('여러 키들이 숨겨졌습니다! 배열 위치는 유지되고 단순히 보이지 않습니다.');
+        }
+        
+        // 키 보이기 데모
+        function showKeysDemo() {
+            // 숨겨진 키들을 다시 보이기
+            kb.show(['q', 'w', 'e', 'r', 't']);
+            
+            setTimeout(() => {
+                kb.show(['1', '2', '3', '4', '5']);
+            }, 300);
+            
+            setTimeout(() => {
+                kb.show(['space', 'enter']);
+            }, 600);
+            
+            alert('숨겨진 키들이 다시 나타났습니다!');
+        }
+        
+        // 전체 초기화 데모
+        function resetKeysDemo() {
+            // 먼저 여러 키를 마킹하고 숨김
+            kb.mark(['a', 's', 'd', 'f'], {
+                backgroundColor: '#e74c3c',
+                color: '#ffffff'
+            });
+            
+            kb.hide(['z', 'x', 'c', 'v']);
+            
+            // 2초 후 전체 초기화
+            setTimeout(() => {
+                kb.reset();
+                alert('모든 키가 원래 상태로 복구되었습니다! (mark 및 hide 모두 해제)');
+            }, 2000);
+            
+            alert('2초 후 전체가 초기화됩니다. 지금 보이는 마킹과 숨김이 모두 사라집니다.');
+        }
+        
+        // 선택적 초기화 데모
+        function selectiveResetDemo() {
+            // 여러 그룹의 키들을 다르게 마킹하고 숨김
+            
+            // 첫 번째 그룹: QWERT 마킹
+            kb.mark(['q', 'w', 'e', 'r', 't'], {
+                backgroundColor: '#e74c3c',
+                color: '#ffffff'
+            });
+            
+            // 두 번째 그룹: ASDF 마킹 및 숨김
+            kb.mark(['a', 's', 'd', 'f'], {
+                backgroundColor: '#2ecc71',
+                color: '#000000'
+            });
+            kb.hide(['a', 's']);
+            
+            // 세 번째 그룹: 12345 마킹
+            kb.mark(['1', '2', '3', '4', '5'], {
+                backgroundColor: '#f39c12',
+                color: '#ffffff'
+            });
+            
+            alert('여러 그룹의 키들을 다르게 설정했습니다. 이제 선택적으로 초기화해보겠습니다.');
+            
+            // 2초 후: QWERT만 초기화
+            setTimeout(() => {
+                kb.reset(['q', 'w', 'e', 'r', 't']);
+                alert('QWERT 키들만 초기화되었습니다. 다른 키들은 그대로 유지됩니다.');
+            }, 2000);
+            
+            // 4초 후: AS 키만 초기화 (숨겨진 키들이 다시 나타남)
+            setTimeout(() => {
+                kb.reset(['a', 's']);
+                alert('A, S 키만 초기화되었습니다. 숨겨졌던 키들이 다시 나타났습니다!');
+            }, 4000);
+            
+            // 6초 후: 단일 키 초기화
+            setTimeout(() => {
+                kb.reset('1');
+                alert('숫자 1 키만 초기화되었습니다. 단일 키도 가능합니다!');
+            }, 6000);
+            
+            // 8초 후: 나머지 전체 초기화
+            setTimeout(() => {
+                kb.reset();
+                alert('마지막으로 나머지 모든 키를 초기화했습니다!');
+            }, 8000);
+        }
+        
+        // 동적 숨김/보이기 데모
+        function dynamicHideShowDemo() {
+            const keys = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
+            let currentIndex = 0;
+            
+            // 반복적으로 키를 숨기고 보이기
+            const interval = setInterval(() => {
+                const currentKey = keys[currentIndex];
+                
+                // 키 숨김
+                kb.hide(currentKey);
+                kb.mark(currentKey, { backgroundColor: '#f39c12' });
+                
+                // 500ms 후 다시 보이기
+                setTimeout(() => {
+                    kb.show(currentKey);
+                }, 500);
+                
+                currentIndex++;
+                
+                // 모든 키를 처리했으면 중지
+                if (currentIndex >= keys.length) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        clearMarks();
+                        alert('동적 숨김/보이기 데모가 종료되었습니다!');
+                    }, 1000);
+                }
+            }, 200);
+            
+            alert('동적 숨김/보이기 데모가 시작됩니다! 키들이 순차적으로 사라지고 나타납니다.');
+        }
+    </script>
+</body>
+</html>
