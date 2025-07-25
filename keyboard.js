@@ -388,21 +388,25 @@ class KeyBoard {
         }
     }
     
-    // 반응형 키보드 크기 조정 (가로+세로 모두 고려)
+    // 반응형 키보드 크기 조정 (다양한 패널 크기 대응 개선)
     adjustKeyboardSize() {
         if (!this.keyboardElement) return;
         
         const containerWidth = this.container.clientWidth;
         const containerHeight = this.container.clientHeight;
         
-        // 패딩 및 여백 계산
-        const horizontalPadding = 32; // 좌우 패딩
-        const verticalPadding = 32;   // 상하 패딩
-        const keyGap = 4;
+        // 컨테이너 크기에 따른 적응형 패딩 계산
+        const minPadding = 8;
+        const maxPadding = 24;
+        const horizontalPadding = Math.max(minPadding, Math.min(maxPadding, containerWidth * 0.05));
+        const verticalPadding = Math.max(minPadding, Math.min(maxPadding, containerHeight * 0.05));
+        
+        // 컨테이너 크기에 따른 적응형 키 간격
+        const keyGap = Math.max(2, Math.min(6, Math.min(containerWidth, containerHeight) * 0.01));
         
         // 사용 가능한 영역
-        const availableWidth = containerWidth - horizontalPadding;
-        const availableHeight = containerHeight - verticalPadding;
+        const availableWidth = containerWidth - (horizontalPadding * 2);
+        const availableHeight = containerHeight - (verticalPadding * 2);
         
         // 키보드 레이아웃 정보
         const maxRowWidth = 15; // 가장 긴 행의 총 단위
@@ -416,21 +420,70 @@ class KeyBoard {
         // 세로 기준 키 크기 계산 
         const keySizeByHeight = (availableHeight - (verticalGaps * keyGap)) / totalRows;
         
-        // 두 값 중 더 작은 값을 사용 (제한적인 쪽에 맞춤)
-        const baseKeySize = Math.max(20, Math.min(keySizeByWidth, keySizeByHeight));
+        // 컨테이너 비율에 따른 크기 결정 로직 개선
+        const containerRatio = containerWidth / containerHeight;
+        const keyboardRatio = 15 / 6; // 키보드의 기본 가로세로 비율
         
-        // 최대 크기 제한 (너무 커지지 않도록)
-        const finalKeySize = Math.min(baseKeySize, 60);
+        let finalKeySize;
+        
+        if (containerRatio > keyboardRatio * 1.5) {
+            // 매우 가로가 긴 컨테이너 (배너 스타일) - 세로 기준으로 맞춤
+            finalKeySize = Math.max(8, keySizeByHeight);
+        } else if (containerRatio < keyboardRatio / 2) {
+            // 매우 세로가 긴 컨테이너 (타워 스타일) - 가로 기준으로 맞춤
+            finalKeySize = Math.max(8, keySizeByWidth);
+        } else {
+            // 일반적인 비율 - 더 제한적인 쪽에 맞춤
+            finalKeySize = Math.max(8, Math.min(keySizeByWidth, keySizeByHeight));
+        }
+        
+        // 매우 작은 컨테이너에서의 최소 크기 보장
+        if (containerWidth < 150 || containerHeight < 100) {
+            finalKeySize = Math.max(6, finalKeySize);
+        }
+        
+        // 최대 크기 제한 (컨테이너 크기에 비례)
+        const maxKeySize = Math.min(80, Math.max(containerWidth, containerHeight) * 0.15);
+        finalKeySize = Math.min(finalKeySize, maxKeySize);
         
         // CSS 변수로 키 크기 설정
         this.keyboardElement.style.setProperty('--key-size', `${finalKeySize}px`);
         this.keyboardElement.style.setProperty('--key-gap', `${keyGap}px`);
+        
+        // 키보드 전체 스케일링 (매우 작은 컨테이너에서)
+        let scaleX = 1;
+        let scaleY = 1;
+        
+        const keyboardWidth = maxRowWidth * finalKeySize + horizontalGaps * keyGap;
+        const keyboardHeight = totalRows * finalKeySize + verticalGaps * keyGap;
+        
+        if (keyboardWidth > availableWidth) {
+            scaleX = availableWidth / keyboardWidth;
+        }
+        if (keyboardHeight > availableHeight) {
+            scaleY = availableHeight / keyboardHeight;
+        }
+        
+        const finalScale = Math.min(scaleX, scaleY);
+        if (finalScale < 1) {
+            this.keyboardElement.style.transform = `scale(${finalScale})`;
+            this.keyboardElement.style.transformOrigin = 'center center';
+        } else {
+            this.keyboardElement.style.transform = 'none';
+        }
         
         // 각 키의 크기 동적 조정
         this.keyElements.forEach(keyElement => {
             const width = parseFloat(keyElement.dataset.width) || 1;
             keyElement.style.width = `${width * finalKeySize}px`;
             keyElement.style.height = `${finalKeySize}px`;
+            
+            // 매우 작은 키에서 폰트 크기 조정
+            if (finalKeySize < 15) {
+                keyElement.style.fontSize = `${Math.max(8, finalKeySize * 0.6)}px`;
+            } else {
+                keyElement.style.fontSize = '';
+            }
         });
         
         // 스페이서 크기 조정
@@ -445,9 +498,12 @@ class KeyBoard {
         console.log(`KeyBoard Size Debug:`, {
             containerWidth,
             containerHeight,
+            containerRatio: containerRatio.toFixed(2),
+            keyboardRatio: keyboardRatio.toFixed(2),
             keySizeByWidth: Math.round(keySizeByWidth),
             keySizeByHeight: Math.round(keySizeByHeight),
-            finalKeySize: Math.round(finalKeySize)
+            finalKeySize: Math.round(finalKeySize),
+            finalScale: finalScale.toFixed(2)
         });
     }
     
