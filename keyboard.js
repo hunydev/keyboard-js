@@ -890,34 +890,75 @@ class KeyBoard {
     }
     
     // 커스텀 이벤트 리스너 등록 (키 누름)
-    onpress(key, callback) {
-        const keyName = key.toLowerCase();
-        if (!this.eventListeners.has(keyName)) {
-            this.eventListeners.set(keyName, { press: [], unpress: [] });
+    onpress(keyOrCallback, callback) {
+        // 전역 리스너: onpress(callback) - 모든 키에 적용
+        if (typeof keyOrCallback === 'function' && callback === undefined) {
+            if (!this.eventListeners.has('*')) {
+                this.eventListeners.set('*', { press: [], unpress: [] });
+            }
+            this.eventListeners.get('*').press.push(keyOrCallback);
+            return;
         }
-        this.eventListeners.get(keyName).press.push(callback);
+        
+        // 특정 키 리스너: onpress(key, callback) 또는 onpress([keys], callback)
+        const keys = Array.isArray(keyOrCallback) ? keyOrCallback : [keyOrCallback];
+        
+        keys.forEach(key => {
+            const keyName = key.toLowerCase();
+            if (!this.eventListeners.has(keyName)) {
+                this.eventListeners.set(keyName, { press: [], unpress: [] });
+            }
+            this.eventListeners.get(keyName).press.push(callback);
+        });
     }
     
     // 커스텀 이벤트 리스너 등록 (키 뗄)
-    onunpress(key, callback) {
-        const keyName = key.toLowerCase();
-        if (!this.eventListeners.has(keyName)) {
-            this.eventListeners.set(keyName, { press: [], unpress: [] });
+    onunpress(keyOrCallback, callback) {
+        // 전역 리스너: onunpress(callback) - 모든 키에 적용
+        if (typeof keyOrCallback === 'function' && callback === undefined) {
+            if (!this.eventListeners.has('*')) {
+                this.eventListeners.set('*', { press: [], unpress: [] });
+            }
+            this.eventListeners.get('*').unpress.push(keyOrCallback);
+            return;
         }
-        this.eventListeners.get(keyName).unpress.push(callback);
+        
+        // 특정 키 리스너: onunpress(key, callback) 또는 onunpress([keys], callback)
+        const keys = Array.isArray(keyOrCallback) ? keyOrCallback : [keyOrCallback];
+        
+        keys.forEach(key => {
+            const keyName = key.toLowerCase();
+            if (!this.eventListeners.has(keyName)) {
+                this.eventListeners.set(keyName, { press: [], unpress: [] });
+            }
+            this.eventListeners.get(keyName).unpress.push(callback);
+        });
     }
     
     // 커스텀 이벤트 발생
     triggerCustomEvent(eventType, key, element) {
         const keyName = key.toLowerCase();
-        const listeners = this.eventListeners.get(keyName);
         
+        // 특정 키 리스너 호출
+        const listeners = this.eventListeners.get(keyName);
         if (listeners && listeners[eventType]) {
             listeners[eventType].forEach(callback => {
                 try {
                     callback(key, element);
                 } catch (error) {
                     console.error(`KeyBoard.js 이벤트 오류 (${eventType}):`, error);
+                }
+            });
+        }
+        
+        // 전역 리스너 호출 ('*')
+        const globalListeners = this.eventListeners.get('*');
+        if (globalListeners && globalListeners[eventType]) {
+            globalListeners[eventType].forEach(callback => {
+                try {
+                    callback(key, element);
+                } catch (error) {
+                    console.error(`KeyBoard.js 전역 이벤트 오류 (${eventType}):`, error);
                 }
             });
         }

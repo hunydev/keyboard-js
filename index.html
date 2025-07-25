@@ -300,6 +300,39 @@ kb.click('space');    // 누르고 떠기 (기존 press 동작)
             </div>
         </div>
         
+        <!-- 키 코드 로깅 데모 섹션 -->
+        <div class="demo-section">
+            <h3>📝 키 코드 로깅 (전역 이벤트)</h3>
+            <p>모든 키의 press/unpress 이벤트를 로그로 확인할 수 있습니다. Left Ctrl vs Right Ctrl 등 코드 차이를 확인하세요!</p>
+            <div class="controls">
+                <button onclick="startKeyLogging()">🟢 로깅 시작</button>
+                <button onclick="stopKeyLogging()">🔴 로깅 중지</button>
+                <button onclick="clearKeyLog()">🧹 로그 지우기</button>
+            </div>
+            <div class="method-example">
+// 전역 이벤트 리스너 사용법
+kb.onpress((key) => console.log('누름:', key));
+kb.onunpress((key) => console.log('떨:', key));
+            </div>
+            <div id="keyLogContainer" style="margin-top: 15px;">
+                <h4>📋 키 로그:</h4>
+                <div id="keyLog" style="
+                    background: #2c3e50;
+                    color: #ecf0f1;
+                    padding: 15px;
+                    border-radius: 8px;
+                    font-family: 'Courier New', monospace;
+                    font-size: 13px;
+                    line-height: 1.4;
+                    max-height: 200px;
+                    overflow-y: auto;
+                    border: 2px solid #34495e;
+                ">
+                    로깅을 시작하면 키 이벤트가 여기에 표시됩니다...
+                </div>
+            </div>
+        </div>
+        
         <!-- 툴팁 데모 섹션 -->
         <div class="demo-section">
             <h3>💬 툴팁 데모</h3>
@@ -453,6 +486,106 @@ kb.destroy();</code></pre>
                 }
                 toggleState = !toggleState;
             }
+        }
+        
+        // 키 코드 로깅 데모 함수들
+        let isKeyLoggingActive = false;
+        let keyLogCount = 0;
+        
+        function startKeyLogging() {
+            if (isKeyLoggingActive) {
+                alert('이미 로깅이 시작되었습니다!');
+                return;
+            }
+            
+            isKeyLoggingActive = true;
+            keyLogCount = 0;
+            
+            // 전역 이벤트 리스너 등록
+            kb.onpress((key, element) => {
+                if (isKeyLoggingActive) {
+                    logKeyEvent('PRESS', key, element);
+                }
+            });
+            
+            kb.onunpress((key, element) => {
+                if (isKeyLoggingActive) {
+                    logKeyEvent('UNPRESS', key, element);
+                }
+            });
+            
+            // 로그 초기화 및 시작 메시지
+            const logElement = document.getElementById('keyLog');
+            logElement.innerHTML = `
+                <div style="color: #2ecc71; font-weight: bold;">
+                    🟢 키 로깅 시작! 키보드를 눌러보세요.
+                    <span style="color: #95a5a6;">(시간: ${new Date().toLocaleTimeString()})</span>
+                </div>
+                <hr style="border: 1px solid #34495e; margin: 10px 0;">
+            `;
+            
+            alert('키 로깅이 시작되었습니다! 이제 키보드를 눌러보세요.');
+        }
+        
+        function stopKeyLogging() {
+            if (!isKeyLoggingActive) {
+                alert('로깅이 시작되지 않았습니다!');
+                return;
+            }
+            
+            isKeyLoggingActive = false;
+            
+            const logElement = document.getElementById('keyLog');
+            logElement.innerHTML += `
+                <hr style="border: 1px solid #34495e; margin: 10px 0;">
+                <div style="color: #e74c3c; font-weight: bold;">
+                    🔴 키 로깅 중지! 총 ${keyLogCount}개 이벤트 기록됨.
+                    <span style="color: #95a5a6;">(시간: ${new Date().toLocaleTimeString()})</span>
+                </div>
+            `;
+            
+            alert(`키 로깅이 중지되었습니다. 총 ${keyLogCount}개 이벤트가 기록되었습니다.`);
+        }
+        
+        function clearKeyLog() {
+            const logElement = document.getElementById('keyLog');
+            logElement.innerHTML = '로깅을 시작하면 키 이벤트가 여기에 표시됩니다...';
+            keyLogCount = 0;
+            alert('로그가 지워졌습니다.');
+        }
+        
+        function logKeyEvent(eventType, key, element) {
+            keyLogCount++;
+            const timestamp = new Date().toLocaleTimeString();
+            
+            // 키 정보 추출
+            const keyCode = element ? element.dataset.code : 'unknown';
+            const keyName = key;
+            
+            // 색상 설정
+            const eventColor = eventType === 'PRESS' ? '#3498db' : '#f39c12';
+            const eventIcon = eventType === 'PRESS' ? '↓' : '↑';
+            
+            const logElement = document.getElementById('keyLog');
+            
+            // 로그 엔트리 생성
+            const logEntry = `
+                <div style="margin: 5px 0; padding: 8px; background: rgba(52, 73, 94, 0.3); border-radius: 4px; border-left: 3px solid ${eventColor};">
+                    <span style="color: ${eventColor}; font-weight: bold;">${eventIcon} ${eventType}</span>
+                    <span style="color: #ecf0f1; margin-left: 10px;">
+                        Key: <span style="color: #f1c40f; font-weight: bold;">'${keyName}'</span>
+                    </span>
+                    <span style="color: #ecf0f1; margin-left: 10px;">
+                        Code: <span style="color: #e67e22; font-weight: bold;">${keyCode}</span>
+                    </span>
+                    <span style="color: #95a5a6; margin-left: 10px; font-size: 11px;">[${timestamp}]</span>
+                </div>
+            `;
+            
+            logElement.innerHTML += logEntry;
+            
+            // 자동 스크롤 (최신 로그를 보이도록)
+            logElement.scrollTop = logElement.scrollHeight;
         }
         
         // 키 시퀀스 데모
