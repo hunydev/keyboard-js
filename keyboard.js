@@ -257,15 +257,66 @@ class KeyBoard {
         
         // 마우스 이벤트 리스너 추가
         key.addEventListener('mousedown', (e) => {
-            this.triggerCustomEvent('press', keyData.key.toLowerCase(), key);
+            const keyName = keyData.key.toLowerCase();
+            const keyState = this.keyStates.get(keyName);
+            
+            if (keyState) {
+                // 이미 프로그래매틱으로 누른 상태는 마우스로 누를 수 없음
+                if (keyState.programmaticPress) {
+                    return;
+                }
+                
+                // 이미 누른 상태는 중복 이벤트 발생시키지 않음
+                if (keyState.isPressed) {
+                    return;
+                }
+                
+                key.classList.add('pressed');
+                keyState.isPressed = true;
+                this.triggerCustomEvent('press', keyName, key);
+            }
         });
         
         key.addEventListener('mouseup', (e) => {
-            this.triggerCustomEvent('unpress', keyData.key.toLowerCase(), key);
+            const keyName = keyData.key.toLowerCase();
+            const keyState = this.keyStates.get(keyName);
+            
+            if (keyState) {
+                // 프로그래매틱으로 누른 상태는 마우스로 뗈 수 없음
+                if (keyState.programmaticPress) {
+                    return;
+                }
+                
+                // 누른 상태가 아니면 unpress 이벤트 발생시키지 않음
+                if (!keyState.isPressed) {
+                    return;
+                }
+                
+                key.classList.remove('pressed');
+                keyState.isPressed = false;
+                this.triggerCustomEvent('unpress', keyName, key);
+            }
         });
         
         key.addEventListener('mouseleave', (e) => {
-            this.triggerCustomEvent('unpress', keyData.key.toLowerCase(), key);
+            const keyName = keyData.key.toLowerCase();
+            const keyState = this.keyStates.get(keyName);
+            
+            if (keyState) {
+                // 프로그래매틱으로 누른 상태는 마우스로 뗈 수 없음
+                if (keyState.programmaticPress) {
+                    return;
+                }
+                
+                // 누른 상태가 아니면 unpress 이벤트 발생시키지 않음
+                if (!keyState.isPressed) {
+                    return;
+                }
+                
+                key.classList.remove('pressed');
+                keyState.isPressed = false;
+                this.triggerCustomEvent('unpress', keyName, key);
+            }
         });
         
         // 키 요소를 맵에 저장 (대소문자 구분 없이)
@@ -283,6 +334,8 @@ class KeyBoard {
             originalBoxShadow: 'none', // 기본적으로 shadow 없음
             originalDisplay: 'flex',
             isMarked: false,
+            isPressed: false, // 현재 누름 상태
+            programmaticPress: false, // 프로그래매틱으로 누른 상태
             tooltip: {
                 content: null,
                 position: 'relative',
@@ -704,12 +757,12 @@ class KeyBoard {
         });
     }
     
-    // 키 누름 효과 (고도화)
-    press(keys, options = {}) {
+    // 키 클릭 효과 (누르고 땐는 전체 동작)
+    click(keys, options = {}) {
         // 기본 옵션 설정
         const defaultOptions = {
             pressDelay: 200,
-            triggerEvent: false // 커스텀 이벤트 발생 여부
+            triggerEvent: true // click은 기본적으로 이벤트 발생
         };
         
         const finalOptions = { ...defaultOptions, ...options };
@@ -719,8 +772,12 @@ class KeyBoard {
         
         keyArray.forEach(key => {
             const keyElement = this.getKeyElement(key);
-            if (keyElement) {
+            const keyName = key.toLowerCase();
+            const keyState = this.keyStates.get(keyName);
+            
+            if (keyElement && keyState) {
                 keyElement.classList.add('pressed');
+                keyState.isPressed = true;
                 
                 // 커스텀 이벤트 발생
                 if (finalOptions.triggerEvent) {
@@ -729,12 +786,83 @@ class KeyBoard {
                 
                 setTimeout(() => {
                     keyElement.classList.remove('pressed');
+                    keyState.isPressed = false;
                     
                     // 커스홀 이벤트 발생
                     if (finalOptions.triggerEvent) {
                         this.triggerCustomEvent('unpress', key, keyElement);
                     }
                 }, finalOptions.pressDelay);
+            }
+        });
+    }
+    
+    // 키 누르기 (누른 상태로 유지)
+    press(keys, options = {}) {
+        // 기본 옵션 설정
+        const defaultOptions = {
+            triggerEvent: false
+        };
+        
+        const finalOptions = { ...defaultOptions, ...options };
+        
+        // 단일 키 또는 배열 처리
+        const keyArray = Array.isArray(keys) ? keys : [keys];
+        
+        keyArray.forEach(key => {
+            const keyElement = this.getKeyElement(key);
+            const keyName = key.toLowerCase();
+            const keyState = this.keyStates.get(keyName);
+            
+            if (keyElement && keyState) {
+                // 이미 누른 상태면 아무것도 안함
+                if (keyState.isPressed) {
+                    return;
+                }
+                
+                keyElement.classList.add('pressed');
+                keyState.isPressed = true;
+                keyState.programmaticPress = true; // 프로그래매틱으로 눈름
+                
+                // 커스텀 이벤트 발생
+                if (finalOptions.triggerEvent) {
+                    this.triggerCustomEvent('press', key, keyElement);
+                }
+            }
+        });
+    }
+    
+    // 키 띴기 (누른 상태에서 땄 상태로)
+    unpress(keys, options = {}) {
+        // 기본 옵션 설정
+        const defaultOptions = {
+            triggerEvent: false
+        };
+        
+        const finalOptions = { ...defaultOptions, ...options };
+        
+        // 단일 키 또는 배열 처리
+        const keyArray = Array.isArray(keys) ? keys : [keys];
+        
+        keyArray.forEach(key => {
+            const keyElement = this.getKeyElement(key);
+            const keyName = key.toLowerCase();
+            const keyState = this.keyStates.get(keyName);
+            
+            if (keyElement && keyState) {
+                // 이미 됸 상태면 아무것도 안함
+                if (!keyState.isPressed) {
+                    return;
+                }
+                
+                keyElement.classList.remove('pressed');
+                keyState.isPressed = false;
+                keyState.programmaticPress = false; // 프로그래매틱 상태 해제
+                
+                // 커스텀 이벤트 발생
+                if (finalOptions.triggerEvent) {
+                    this.triggerCustomEvent('unpress', key, keyElement);
+                }
             }
         });
     }
@@ -751,7 +879,7 @@ class KeyBoard {
         const finalOptions = { ...defaultOptions, ...options };
         
         for (let i = 0; i < keys.length; i++) {
-            this.press(keys[i], {
+            this.click(keys[i], {
                 pressDelay: finalOptions.pressDelay,
                 triggerEvent: finalOptions.triggerEvent
             });
@@ -942,12 +1070,17 @@ class KeyBoard {
             // 보이기/숨김 복구
             keyElement.style.display = keyState.originalDisplay;
             
+            // pressed 상태 해제 (시각적 + 내부 상태)
+            keyElement.classList.remove('pressed');
+            
             // 툴팁 제거
             this.hideTooltip(keyName);
             
             // 상태 초기화
             keyState.visible = true;
             keyState.isMarked = false;
+            keyState.isPressed = false; // pressed 상태 초기화
+            keyState.programmaticPress = false; // 프로그래매틱 상태 초기화
             keyState.originalBackgroundColor = '';
             keyState.originalColor = '';
             keyState.originalBorder = 'none';

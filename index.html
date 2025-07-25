@@ -247,6 +247,25 @@ kb.flow(['h','e','l','l','o'], { delay: 300, pressDelay: 200 });
             </div>
         </div>
         
+        <!-- 새로운 press/unpress 기능 데모 -->
+        <div class="demo-section">
+            <h3>🎮 키 상태 제어 (press/unpress/click)</h3>
+            <p>새로운 API로 키를 누른 상태로 유지하거나 해제할 수 있습니다!</p>
+            <div class="controls">
+                <input type="text" id="stateKey" placeholder="키 입력 (예: shift, ctrl, space)" value="shift">
+                <button onclick="pressStateDemo()">🔒 누른 상태로 유지 (press)</button>
+                <button onclick="unpressStateDemo()">🔓 누름 해제 (unpress)</button>
+                <button onclick="clickStateDemo()">👆 일반 클릭 (click)</button>
+                <button onclick="toggleStateDemo()">🔄 상태 토글</button>
+            </div>
+            <div class="method-example">
+// 새로운 키 상태 제어 API
+kb.press('shift');    // 누른 상태로 유지
+kb.unpress('shift');  // 누름 해제 
+kb.click('space');    // 누르고 떠기 (기존 press 동작)
+            </div>
+        </div>
+        
         <!-- 새로운 고급 기능 데모 -->
         <div class="demo-section">
             <h3>🚀 고급 기능 데모</h3>
@@ -328,8 +347,10 @@ const kb = new KeyBoard('#keyboard-area');
 kb.mark('a', '#ff6b6b');        // 빨간색
 kb.mark('enter', '#4ecdc4');    // 청록색
 
-// 3. 키 누름 효과
-kb.press('space', 300);         // 300ms 동안 누름 효과
+// 3. 키 누름 제어 (새로운 API!)
+kb.click('space', { pressDelay: 300 });  // 누르고 땅 (기존 press 동작)
+kb.press('shift');                       // 누른 상태로 유지
+kb.unpress('shift');                     // 누름 해제
 
 // 4. 키 시퀀스 실행
 kb.flow(['h','e','l','l','o'], {
@@ -353,7 +374,7 @@ kb.clearMarks();                   // 모든 마킹 제거
 kb.clearMarks('a');                // 특정 키만 제거
 kb.clearMarks(['w','a','s','d']);  // 배열 키들만 제거
 
-// 8. 전체 초기화 (마킹+툴팁+숨김 등)
+// 8. 전체 초기화 (마킹+툴팁+숨김+누름상태 등)
 kb.reset();
 
 // 9. 키보드 제거
@@ -385,12 +406,52 @@ kb.destroy();</code></pre>
             kb.clearMarks(); // 마킹만 제거
         }
         
-        // 키 누름 효과 데모
+        // 키 클릭 효과 데모 (기존 press 동작)
         function pressDemo() {
             const key = document.getElementById('pressKey').value.trim();
             const delay = parseInt(document.getElementById('pressDelay').value);
             if (key) {
-                kb.press(key, delay);
+                kb.click(key, { pressDelay: delay });
+            }
+        }
+        
+        // 새로운 press/unpress 상태 제어 데모 함수들
+        function pressStateDemo() {
+            const key = document.getElementById('stateKey').value.trim();
+            if (key) {
+                kb.press(key, { triggerEvent: true });
+                alert(`"${key}" 키가 누른 상태로 유지됩니다. 마우스로 눌러도 떨 수 없습니다!`);
+            }
+        }
+        
+        function unpressStateDemo() {
+            const key = document.getElementById('stateKey').value.trim();
+            if (key) {
+                kb.unpress(key, { triggerEvent: true });
+                alert(`"${key}" 키의 누름 상태가 해제되었습니다.`);
+            }
+        }
+        
+        function clickStateDemo() {
+            const key = document.getElementById('stateKey').value.trim();
+            if (key) {
+                kb.click(key, { pressDelay: 300, triggerEvent: true });
+                alert(`"${key}" 키를 일반적인 클릭처럼 누르고 떨었습니다.`);
+            }
+        }
+        
+        let toggleState = false;
+        function toggleStateDemo() {
+            const key = document.getElementById('stateKey').value.trim();
+            if (key) {
+                if (toggleState) {
+                    kb.unpress(key, { triggerEvent: true });
+                    alert(`"${key}" 키 누름 해제!`);
+                } else {
+                    kb.press(key, { triggerEvent: true });
+                    alert(`"${key}" 키 누른 상태!`);
+                }
+                toggleState = !toggleState;
             }
         }
         
