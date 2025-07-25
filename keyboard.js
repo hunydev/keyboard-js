@@ -305,39 +305,66 @@ class KeyBoard {
         }
     }
     
-    // 반응형 키보드 크기 조정
+    // 반응형 키보드 크기 조정 (가로+세로 모두 고려)
     adjustKeyboardSize() {
         if (!this.keyboardElement) return;
         
         const containerWidth = this.container.clientWidth;
-        const padding = 32; // 좌우 패딩
-        const availableWidth = containerWidth - padding;
+        const containerHeight = this.container.clientHeight;
         
-        // 가장 긴 행의 총 너비 계산 (일반적으로 숫자키 행이 가장 김)
-        const maxRowWidth = 15; // 가장 긴 행의 총 단위 (백스페이스 포함)
-        const keyGap = 4; // 키 간격
-        const totalGaps = 13; // 키 사이 간격 개수
+        // 패딩 및 여백 계산
+        const horizontalPadding = 32; // 좌우 패딩
+        const verticalPadding = 32;   // 상하 패딩
+        const keyGap = 4;
         
-        // 기본 키 크기 계산
-        const baseKeySize = Math.max(25, Math.min(50, (availableWidth - (totalGaps * keyGap)) / maxRowWidth));
+        // 사용 가능한 영역
+        const availableWidth = containerWidth - horizontalPadding;
+        const availableHeight = containerHeight - verticalPadding;
+        
+        // 키보드 레이아웃 정보
+        const maxRowWidth = 15; // 가장 긴 행의 총 단위
+        const totalRows = 6;     // 총 행 개수
+        const horizontalGaps = 13; // 키 사이 가로 간격 개수
+        const verticalGaps = 5;    // 행 사이 세로 간격 개수
+        
+        // 가로 기준 키 크기 계산
+        const keySizeByWidth = (availableWidth - (horizontalGaps * keyGap)) / maxRowWidth;
+        
+        // 세로 기준 키 크기 계산 
+        const keySizeByHeight = (availableHeight - (verticalGaps * keyGap)) / totalRows;
+        
+        // 두 값 중 더 작은 값을 사용 (제한적인 쪽에 맞춤)
+        const baseKeySize = Math.max(20, Math.min(keySizeByWidth, keySizeByHeight));
+        
+        // 최대 크기 제한 (너무 커지지 않도록)
+        const finalKeySize = Math.min(baseKeySize, 60);
         
         // CSS 변수로 키 크기 설정
-        this.keyboardElement.style.setProperty('--key-size', `${baseKeySize}px`);
+        this.keyboardElement.style.setProperty('--key-size', `${finalKeySize}px`);
         this.keyboardElement.style.setProperty('--key-gap', `${keyGap}px`);
         
         // 각 키의 크기 동적 조정
         this.keyElements.forEach(keyElement => {
             const width = parseFloat(keyElement.dataset.width) || 1;
-            keyElement.style.width = `${width * baseKeySize}px`;
-            keyElement.style.height = `${baseKeySize}px`;
+            keyElement.style.width = `${width * finalKeySize}px`;
+            keyElement.style.height = `${finalKeySize}px`;
         });
         
         // 스페이서 크기 조정
         const spacers = this.keyboardElement.querySelectorAll('.key-spacer');
         spacers.forEach(spacer => {
             const width = parseFloat(spacer.dataset.width) || 1;
-            spacer.style.width = `${width * baseKeySize}px`;
-            spacer.style.height = `${baseKeySize}px`;
+            spacer.style.width = `${width * finalKeySize}px`;
+            spacer.style.height = `${finalKeySize}px`;
+        });
+        
+        // 디버그 정보 (개발용)
+        console.log(`KeyBoard Size Debug:`, {
+            containerWidth,
+            containerHeight,
+            keySizeByWidth: Math.round(keySizeByWidth),
+            keySizeByHeight: Math.round(keySizeByHeight),
+            finalKeySize: Math.round(finalKeySize)
         });
     }
     
