@@ -135,8 +135,38 @@ class KeyBoard {
     
     // 키보드 초기화
     init() {
+        this.setupContainerStyles();
         this.createKeyboard();
         this.setupStyles();
+    }
+    
+    // 컨테이너에 키보드 렌더링을 위한 필수 스타일 적용
+    setupContainerStyles() {
+        // 컨테이너에 키보드 렌더링에 필요한 기본 스타일 적용
+        const containerStyle = this.container.style;
+        
+        // 기존 display가 설정되지 않았거나 적절하지 않은 경우에만 설정
+        const currentDisplay = window.getComputedStyle(this.container).display;
+        if (!currentDisplay || currentDisplay === 'inline' || currentDisplay === 'inline-block') {
+            containerStyle.display = 'flex';
+        }
+        
+        // Flexbox 설정 (키보드를 중앙에 배치하기 위해)
+        if (currentDisplay === 'flex' || containerStyle.display === 'flex') {
+            containerStyle.justifyContent = 'center';
+            containerStyle.alignItems = 'center';
+        }
+        
+        // 최소 높이 설정 (키보드가 너무 작아지지 않도록)
+        const currentHeight = window.getComputedStyle(this.container).height;
+        if (!currentHeight || currentHeight === 'auto' || parseInt(currentHeight) < 150) {
+            containerStyle.minHeight = '200px';
+        }
+        
+        // 컨테이너가 inline 요소라면 block으로 변경
+        if (currentDisplay === 'inline') {
+            containerStyle.display = 'block';
+        }
     }
     
     // 키보드 DOM 요소 생성
