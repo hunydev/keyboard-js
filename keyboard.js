@@ -1120,7 +1120,7 @@ class KeyBoard {
         }
     }
     
-    // 키 숨기기 (배열에서 위치 재조정 없이 단순히 사라짐)
+    // 키 숨기기 (레이아웃 보존하면서 숨김)
     hide(keys) {
         // 단일 키 또는 배열 처리
         const keyArray = Array.isArray(keys) ? keys : [keys];
@@ -1131,7 +1131,10 @@ class KeyBoard {
             const keyState = this.keyStates.get(keyName);
             
             if (keyElement && keyState) {
-                keyElement.style.display = 'none';
+                // visibility: hidden을 사용하여 자리는 유지하면서 숨김
+                keyElement.style.visibility = 'hidden';
+                keyElement.style.opacity = '0';
+                keyElement.style.pointerEvents = 'none'; // 클릭 이벤트도 비활성화
                 keyState.visible = false;
             }
         });
@@ -1148,7 +1151,10 @@ class KeyBoard {
             const keyState = this.keyStates.get(keyName);
             
             if (keyElement && keyState) {
-                keyElement.style.display = keyState.originalDisplay;
+                // visibility 및 opacity 복구
+                keyElement.style.visibility = 'visible';
+                keyElement.style.opacity = '1';
+                keyElement.style.pointerEvents = 'auto'; // 클릭 이벤트 다시 활성화
                 keyState.visible = true;
             }
         });
@@ -1194,8 +1200,10 @@ class KeyBoard {
             keyElement.style.boxShadow = '';
             keyElement.style.removeProperty('box-shadow');
             
-            // 보이기/숨김 복구
-            keyElement.style.display = keyState.originalDisplay;
+            // 보이기/숨김 복구 (새로운 visibility 방식에 맞게)
+            keyElement.style.visibility = 'visible';
+            keyElement.style.opacity = '1';
+            keyElement.style.pointerEvents = 'auto';
             
             // pressed 상태 해제 (시각적 + 내부 상태)
             keyElement.classList.remove('pressed');
@@ -1215,6 +1223,46 @@ class KeyBoard {
             keyState.tooltip.content = null;
             keyState.tooltip.isActive = false;
         }
+    }
+    
+    // 키 숨기기 (레이아웃 보존하면서 숨김)
+    hide(keys) {
+        // 단일 키 또는 배열 처리
+        const keyArray = Array.isArray(keys) ? keys : [keys];
+        
+        keyArray.forEach(key => {
+            const keyElement = this.getKeyElement(key);
+            const keyName = key.toLowerCase();
+            const keyState = this.keyStates.get(keyName);
+            
+            if (keyElement && keyState) {
+                // visibility: hidden을 사용하여 자리는 유지하면서 숨김
+                keyElement.style.visibility = 'hidden';
+                keyElement.style.opacity = '0';
+                keyElement.style.pointerEvents = 'none'; // 클릭 이벤트도 비활성화
+                keyState.visible = false;
+            }
+        });
+    }
+    
+    // 숨긴 키 보이기
+    show(keys) {
+        // 단일 키 또는 배열 처리
+        const keyArray = Array.isArray(keys) ? keys : [keys];
+        
+        keyArray.forEach(key => {
+            const keyElement = this.getKeyElement(key);
+            const keyName = key.toLowerCase();
+            const keyState = this.keyStates.get(keyName);
+            
+            if (keyElement && keyState) {
+                // visibility 및 opacity 복구
+                keyElement.style.visibility = 'visible';
+                keyElement.style.opacity = '1';
+                keyElement.style.pointerEvents = 'auto'; // 클릭 이벤트 다시 활성화
+                keyState.visible = true;
+            }
+        });
     }
     
     // 툴팁 설정 메서드
