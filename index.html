@@ -190,6 +190,473 @@
         .method-example code::selection {
             background: #b3d4fc;
         }
+        
+        /* 모달 스타일 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            padding: 20px;
+            transform: scale(0.7);
+            transition: transform 0.3s ease;
+            max-width: 95vw;
+            max-height: 95vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .modal-overlay.active .modal-container {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .modal-title {
+            margin: 0;
+            color: #333;
+            font-size: 20px;
+        }
+        
+        .modal-close {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .modal-close:hover {
+            background: #d32f2f;
+        }
+        
+        .modal-content {
+            flex: 1;
+            overflow: auto;
+        }
+        
+        .modal-keyboard-container {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* 모달 크기별 스타일 */
+        .modal-small .modal-container {
+            width: 300px;
+            height: 250px;
+        }
+        
+        .modal-large .modal-container {
+            width: 800px;
+            height: 600px;
+        }
+        
+        .modal-half-screen .modal-container {
+            width: 40vw;
+            height: 85vh;
+        }
+        
+        .modal-full-screen .modal-container {
+            width: 95vw;
+            height: 95vh;
+        }
+        
+        .modal-info {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        
+        /* 타일 아트 멀틴 패널 모달 스타일 */
+        .modal-tile-art .modal-container {
+            width: 95vw;
+            height: 90vh;
+            max-width: 1400px;
+        }
+        
+        .tile-art-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(8, minmax(120px, 1fr));
+            gap: 8px;
+            height: 100%;
+            padding: 12px;
+            overflow-y: auto;
+        }
+        
+        .keyboard-panel {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #f9f9f9 0%, #f1f1f1 100%);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .keyboard-panel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        
+        .keyboard-panel::before {
+            content: attr(data-label);
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            font-size: 11px;
+            color: #555;
+            font-weight: bold;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 4px 8px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* 타일 아트 패널 크기 정의 */
+        .keyboard-panel.tiny {
+            grid-column: span 1;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        }
+        
+        .keyboard-panel.small {
+            grid-column: span 1;
+            grid-row: span 2;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+        }
+        
+        .keyboard-panel.medium {
+            grid-column: span 2;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+        
+        .keyboard-panel.wide {
+            grid-column: span 3;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+        }
+        
+        .keyboard-panel.tall {
+            grid-column: span 1;
+            grid-row: span 3;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+        }
+        
+        .keyboard-panel.large {
+            grid-column: span 2;
+            grid-row: span 2;
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        }
+        
+        .keyboard-panel.xlarge {
+            grid-column: span 3;
+            grid-row: span 2;
+            background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
+        }
+        
+        .keyboard-panel.mega {
+            grid-column: span 2;
+            grid-row: span 3;
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+        }
+        
+        .keyboard-panel.tower {
+            grid-column: span 1;
+            grid-row: span 4;
+            background: linear-gradient(135deg, #fafafa 0%, #e0e0e0 100%);
+        }
+        
+        .keyboard-panel.banner {
+            grid-column: span 4;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+        }
+        
+        /* 추가 패널 크기 클래스 - 시각적 차이 개선 */
+        .keyboard-panel.micro {
+            grid-column: span 1;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #fff9e6 0%, #ffecb3 100%);
+            min-height: 60px;
+        }
+        
+        .keyboard-panel.nano {
+            grid-column: span 2;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #f0f4c3 0%, #dce775 100%);
+            min-height: 50px;
+        }
+        
+        .keyboard-panel.compact {
+            grid-column: span 1;
+            grid-row: span 2;
+            background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+        }
+        
+        .keyboard-panel.standard {
+            grid-column: span 3;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            min-height: 140px;
+        }
+        
+        /* 극단적인 variation 패널들 - 키보드 렌더링 테스트용 */
+        .keyboard-panel.ultra-wide {
+            grid-column: span 5;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #ff8a80 0%, #ff5722 100%);
+            min-height: 140px;
+        }
+        
+        .keyboard-panel.super-wide {
+            grid-column: span 6;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #80cbc4 0%, #009688 100%);
+            min-height: 140px;
+        }
+        
+        .keyboard-panel.ultra-tall {
+            grid-column: span 1;
+            grid-row: span 5;
+            background: linear-gradient(135deg, #ce93d8 0%, #9c27b0 100%);
+        }
+        
+        .keyboard-panel.skyscraper {
+            grid-column: span 1;
+            grid-row: span 6;
+            background: linear-gradient(135deg, #90caf9 0%, #2196f3 100%);
+        }
+        
+        .keyboard-panel.square-large {
+            grid-column: span 3;
+            grid-row: span 3;
+            background: linear-gradient(135deg, #a5d6a7 0%, #4caf50 100%);
+        }
+        
+        .keyboard-panel.square-huge {
+            grid-column: span 4;
+            grid-row: span 4;
+            background: linear-gradient(135deg, #ffab91 0%, #ff5722 100%);
+        }
+        
+        .keyboard-panel.rectangle-wide {
+            grid-column: span 4;
+            grid-row: span 2;
+            background: linear-gradient(135deg, #f8bbd9 0%, #e91e63 100%);
+        }
+        
+        .keyboard-panel.rectangle-tall {
+            grid-column: span 2;
+            grid-row: span 4;
+            background: linear-gradient(135deg, #b39ddb 0%, #673ab7 100%);
+        }
+        
+        .keyboard-panel.ultra-thin {
+            grid-column: span 1;
+            grid-row: span 7;
+            background: linear-gradient(135deg, #ffcc02 0%, #ff9800 100%);
+        }
+        
+        .keyboard-panel.ribbon {
+            grid-column: span 7;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #81c784 0%, #388e3c 100%);
+            min-height: 140px;
+        }
+        
+        .keyboard-panel.needle {
+            grid-column: span 1;
+            grid-row: span 8;
+            background: linear-gradient(135deg, #64b5f6 0%, #1976d2 100%);
+        }
+        
+        .keyboard-panel.giant {
+            grid-column: span 6;
+            grid-row: span 3;
+            background: linear-gradient(135deg, #dce775 0%, #689f38 100%);
+        }
+        
+        .keyboard-panel.panorama {
+            grid-column: span 8;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #f06292 0%, #c2185b 100%);
+        }
+        
+        .keyboard-panel.pillar {
+            grid-column: span 2;
+            grid-row: span 5;
+            background: linear-gradient(135deg, #4db6ac 0%, #00695c 100%);
+        }
+        
+        .keyboard-panel.postcard {
+            grid-column: span 4;
+            grid-row: span 2;
+            background: linear-gradient(135deg, #aed581 0%, #558b2f 100%);
+        }
+        
+        .keyboard-panel.stamp {
+            grid-column: span 2;
+            grid-row: span 2;
+            background: linear-gradient(135deg, #ffb74d 0%, #e65100 100%);
+            min-height: 40px;
+        }
+        
+        .keyboard-panel.banner-thin {
+            grid-column: span 4;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #ba68c8 0%, #7b1fa2 100%);
+            min-height: 35px;
+        }
+        
+        /* 초대형 패널들 - 12x8 그리드 최대 활용 */
+        .keyboard-panel.massive {
+            grid-column: span 12;
+            grid-row: span 8;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff3838 100%);
+            min-height: 600px;
+        }
+        
+        .keyboard-panel.ultra-wide-max {
+            grid-column: span 12;
+            grid-row: span 4;
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            min-height: 500px;
+        }
+        
+        .keyboard-panel.ultra-tall-max {
+            grid-column: span 6;
+            grid-row: span 8;
+            background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 100%);
+            min-height: 600px;
+        }
+        
+        .keyboard-panel.mega-square {
+            grid-column: span 8;
+            grid-row: span 8;
+            background: linear-gradient(135deg, #ffd93d 0%, #ff6b35 100%);
+            min-height: 600px;
+        }
+        
+        .keyboard-panel.wide-banner {
+            grid-column: span 12;
+            grid-row: span 3;
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            min-height: 500px;
+        }
+        
+        .keyboard-panel.tall-banner {
+            grid-column: span 5;
+            grid-row: span 8;
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            min-height: 600px;
+        }
+        
+        .keyboard-panel.super-square {
+            grid-column: span 6;
+            grid-row: span 6;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            min-height: 480px;
+        }
+        
+        .keyboard-panel.wide-rect {
+            grid-column: span 10;
+            grid-row: span 5;
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            min-height: 500px;
+        }
+        
+        .keyboard-panel.tall-rect {
+            grid-column: span 4;
+            grid-row: span 8;
+            background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%);
+            min-height: 600px;
+        }
+        
+        .keyboard-panel.huge-wide {
+            grid-column: span 12;
+            grid-row: span 2;
+            background: linear-gradient(135deg, #00b894 0%, #55efc4 100%);
+            min-height: 500px;
+        }
+        
+        .keyboard-panel.huge-tall {
+            grid-column: span 3;
+            grid-row: span 8;
+            background: linear-gradient(135deg, #e84393 0%, #fd79a8 100%);
+            min-height: 600px;
+        }
+        
+        .keyboard-panel.mega-wide {
+            grid-column: span 12;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+            min-height: 140px;
+        }
+        
+        .keyboard-panel.colossal {
+            grid-column: span 10;
+            grid-row: span 8;
+            background: linear-gradient(135deg, #fd63a3 0%, #fc3a52 100%);
+            min-height: 600px;
+        }
+        
+        .keyboard-panel.enormous {
+            grid-column: span 8;
+            grid-row: span 6;
+            background: linear-gradient(135deg, #778beb 0%, #546de5 100%);
+            min-height: 480px;
+        }
+        
+        .keyboard-panel.gigantic {
+            grid-column: span 9;
+            grid-row: span 7;
+            background: linear-gradient(135deg, #f8b500 0%, #feca57 100%);
+            min-height: 560px;
+        }
     </style>
 </head>
 <body>
@@ -200,6 +667,47 @@
         <!-- 키보드가 렌더링될 영역 -->
         <div class="keyboard-container">
             <div id="keyboard-area" style="width:600px"></div>
+        </div>
+        
+        <!-- 컨테이너 구성 가이드 섹션 -->
+        <div class="demo-section">
+            <h3>📦 컨테이너 구성 가이드</h3>
+            <div class="info-box">
+                <h4>⚠️ 중요: 컨테이너 크기 설정 가이드</h4>
+                <p><strong>keyboard.js</strong>는 컨테이너 크기에 따라 자동으로 키보드 크기를 조정합니다. 올바른 렌더링을 위해 다음 가이드를 따라주세요:</p>
+                
+                <h5>🔸 최소 높이 요구사항:</h5>
+                <ul>
+                    <li><strong>일반 비율 컨테이너</strong>: 최소 <code>300px</code> 높이 권장</li>
+                    <li><strong>가로가 긴 컨테이너</strong> (width:height > 3:1): 최소 <code>480~500px</code> 높이 <strong>필수</strong></li>
+                    <li><strong>매우 가로가 긴 배너형</strong> (width:height > 5:1): 최소 <code>500px</code> 높이 <strong>필수</strong></li>
+                </ul>
+                
+                <h5>🔸 크기 조정 원리:</h5>
+                <ul>
+                    <li><strong>가로 기준</strong>: 컨테이너가 정사각형에 가까우면 가로 크기에 맞춰 조정</li>
+                    <li><strong>세로 기준</strong>: 컨테이너가 매우 가로로 길면 세로 크기에 맞춰 조정</li>
+                    <li><strong>키보드는 총 6행</strong>이므로 높이가 부족하면 아래쪽이 잘림</li>
+                </ul>
+                
+                <h5>🔸 CSS 예시:</h5>
+                <pre><code>/* ✅ 올바른 설정 */
+.keyboard-container {
+    width: 600px;
+    min-height: 300px;  /* 일반 비율 */
+}
+
+.banner-container {
+    width: 1000px;
+    min-height: 500px;  /* 가로가 긴 배너형 */
+}
+
+/* ❌ 잘못된 설정 */
+.bad-container {
+    width: 800px;
+    height: 150px;  /* 너무 낮음 - 키보드 잘림! */
+}</code></pre>
+            </div>
         </div>
         
         <!-- 데모 섹션 1: 기본 기능 -->
@@ -344,6 +852,19 @@ kb.onunpress((key) => console.log('떨:', key));
                 <button onclick="htmlTooltipDemo()">🎨 HTML 툴팁</button>
                 <button onclick="multiTooltipDemo()">📝 다중 툴팁</button>
                 <button onclick="clearTooltips()">🗑️ 툴팁 제거</button>
+            </div>
+        </div>
+        
+        <!-- 모달 데모 섹션 -->
+        <div class="demo-section">
+            <h3>🖼️ 다양한 해상도 모달 데모</h3>
+            <p>가상 키보드가 다양한 모달 크기에서 적절히 렌더링되는지 확인해보세요!</p>
+            <div class="controls">
+                <button onclick="openSmallModal()">📱 Small 모달 (300x250)</button>
+                <button onclick="openLargeModal()">🖥️ Large 모달 (800x600)</button>
+                <button onclick="openHalfScreenModal()">📏 Half-Screen 모달 (세로)</button>
+                <button onclick="openFullScreenModal()">🗺️ Full-Screen 모달</button>
+                <button onclick="openMultiPanelModal()">🎨 Multi-Panel 모달 (여러 패널)</button>
             </div>
         </div>
         
@@ -1083,6 +1604,488 @@ kb.destroy();</code></pre>
             
             alert('동적 숨김/보이기 데모가 시작됩니다! 키들이 순차적으로 사라지고 나타납니다.');
         }
+        
+        // 모달 데모 함수들
+        let modalKeyboardInstances = new Map();
+        
+        function createModal(size, title, description) {
+            // 기존 모달 제거
+            removeModal();
+            
+            // 모달 구조 생성
+            const modal = document.createElement('div');
+            modal.className = `modal-overlay modal-${size}`;
+            modal.id = 'demoModal';
+            
+            modal.innerHTML = `
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h3 class="modal-title">${title}</h3>
+                        <button class="modal-close" onclick="removeModal()">×</button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="modal-info">${description}</div>
+                        <div class="modal-keyboard-container" id="modalKeyboardContainer">
+                            <!-- 키보드가 여기에 렌더링됩니다 -->
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 모달 표시 애니메이션
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 50);
+            
+            // 모달 외부 클릭 시 닫기
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    removeModal();
+                }
+            });
+            
+            // ESC 키로 닫기
+            const handleEsc = (e) => {
+                if (e.key === 'Escape') {
+                    removeModal();
+                    document.removeEventListener('keydown', handleEsc);
+                }
+            };
+            document.addEventListener('keydown', handleEsc);
+            
+            return modal;
+        }
+        
+        function removeModal() {
+            // 새로운 모달 구조에 맞게 수정
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    modal.remove();
+                    // 모달 키보드 인스턴스 정리
+                    modalKeyboardInstances.clear();
+                }, 300);
+            }
+        }
+        
+        function createModalKeyboard() {
+            const container = document.getElementById('modalKeyboardContainer');
+            if (!container) return null;
+            
+            // 새 키보드 인스턴스 생성
+            const modalKb = new KeyBoard('#modalKeyboardContainer');
+            modalKeyboardInstances.set('current', modalKb);
+            
+            // 모달 키보드에 간단한 데모 이벤트 추가
+            modalKb.onpress((key) => {
+                console.log('모달 키보드에서 누름:', key);
+            });
+            
+            // 샘플 마킹 추가
+            setTimeout(() => {
+                modalKb.mark(['w', 'a', 's', 'd'], {
+                    backgroundColor: '#3498db',
+                    color: '#ffffff'
+                });
+                modalKb.mark(['space'], {
+                    backgroundColor: '#e74c3c',
+                    color: '#ffffff'
+                });
+            }, 500);
+            
+            return modalKb;
+        }
+        
+        // 모달 데모 함수들
+        function openSmallModal() {
+            const modal = createModal('small', '📱 Small 모달', '작은 모달에서의 키보드 렌더링 테스트 (300x250)');
+            setTimeout(() => {
+                createModalKeyboard();
+            }, 400);
+        }
+        
+        function openLargeModal() {
+            const modal = createModal('large', '🖥️ Large 모달', '중간 크기 모달에서의 키보드 렌더링 테스트 (800x600)');
+            setTimeout(() => {
+                createModalKeyboard();
+            }, 400);
+        }
+        
+        function openHalfScreenModal() {
+            const modal = createModal('half-screen', '📏 Half-Screen 모달', '세로가 긴 모달에서의 키보드 렌더링 테스트 (40vw x 85vh)');
+            setTimeout(() => {
+                createModalKeyboard();
+            }, 400);
+        }
+        
+        function openFullScreenModal() {
+            const modal = createModal('full-screen', '🗺️ Full-Screen 모달', '전체 화면 모달에서의 키보드 렌더링 테스트 (95vw x 95vh)');
+            setTimeout(() => {
+                createModalKeyboard();
+            }, 400);
+        }
+        
+        function openTileArtModal() {
+            // 타일 아트 모달 열기
+            createTileArtModal();
+        }
+        
+        function createTileArtModal() {
+            // 기존 모달 제거
+            removeModal();
+            
+            // 모달 오버레이 생성
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay modal-tile-art';
+            overlay.innerHTML = `
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h2 class="modal-title">🎨 타일 아트 멀티 패널</h2>
+                        <button class="modal-close" onclick="removeModal()">×</button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="modal-info">🌌 극한 스케일! 초소형부터 초대형까지 - 1x1 micro부터 12x8 massive까지 완전한 크기 스펙트럼으로 KeyBoard 렌더링 한계 테스트</div>
+                        <div class="tile-art-grid">
+                            <div class="keyboard-panel massive" data-label="Massive (12x8)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel colossal" data-label="Colossal (10x8)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel mega-square" data-label="Mega Square (8x8)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel gigantic" data-label="Gigantic (9x7)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel enormous" data-label="Enormous (8x6)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel ultra-tall-max" data-label="Ultra Tall Max (6x8)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel wide-rect" data-label="Wide Rect (10x5)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel tall-banner" data-label="Tall Banner (5x8)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel ultra-wide-max" data-label="Ultra Wide Max (12x4)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel super-square" data-label="Super Square (6x6)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel tall-rect" data-label="Tall Rect (4x8)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel wide-banner" data-label="Wide Banner (12x3)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel huge-tall" data-label="Huge Tall (3x8)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel huge-wide" data-label="Huge Wide (12x2)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel mega-wide" data-label="Mega Wide (12x1)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel needle" data-label="Needle (1x8)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel ultra-thin" data-label="Ultra Thin (1x7)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel skyscraper" data-label="Skyscraper (1x6)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel ultra-tall" data-label="Ultra Tall (1x5)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel panorama" data-label="Panorama (8x1)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel ribbon" data-label="Ribbon (7x1)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel super-wide" data-label="Super Wide (6x1)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel ultra-wide" data-label="Ultra Wide (5x1)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel micro" data-label="Micro (1x1)">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 모달 오버레이 이벤트 리스너 (외부 클릭 시 닫기)
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    removeModal();
+                }
+            });
+            
+            document.body.appendChild(overlay);
+            
+            // 애니메이션 효과를 위해 약간 딸레이
+            setTimeout(() => {
+                overlay.classList.add('active');
+            }, 10);
+            
+            // ESC 키 이벤트 리스너
+            const handleEsc = (e) => {
+                if (e.key === 'Escape') {
+                    removeModal();
+                    document.removeEventListener('keydown', handleEsc);
+                }
+            };
+            document.addEventListener('keydown', handleEsc);
+            
+            // 타일 아트 패널에 키보드 생성
+            setTimeout(() => {
+                createTileArtKeyboards();
+            }, 400);
+            
+            return overlay;
+        }
+        
+        function createTileArtKeyboards() {
+            // .keyboard-panel 클래스를 가진 모든 요소에 키보드 생성
+            const panels = document.querySelectorAll('.keyboard-panel');
+            
+            panels.forEach((panel, index) => {
+                // 각 패널에 고유 ID 부여
+                panel.id = `tile-art-panel-${index}`;
+                
+                try {
+                    // KeyBoard 인스턴스 생성 (자동 스타일링 테스트)
+                    const kb = new KeyBoard(`#tile-art-panel-${index}`);
+                    
+                    // 각 키보드에 다른 색상의 마킹 적용
+                    const colorPalettes = [
+                        { bg: '#e74c3c', color: '#ffffff' }, // 빨간
+                        { bg: '#3498db', color: '#ffffff' }, // 파란
+                        { bg: '#2ecc71', color: '#ffffff' }, // 초록
+                        { bg: '#f39c12', color: '#ffffff' }, // 주황
+                        { bg: '#9b59b6', color: '#ffffff' }, // 보라
+                        { bg: '#1abc9c', color: '#ffffff' }, // 에메랄드
+                        { bg: '#e67e22', color: '#ffffff' }, // 캐럿
+                        { bg: '#34495e', color: '#ffffff' }, // 어둠운 파란
+                        { bg: '#d35400', color: '#ffffff' }, // 펌킨
+                        { bg: '#c0392b', color: '#ffffff' }, // 진한 빨간
+                        { bg: '#8e44ad', color: '#ffffff' }, // 우아한 보라
+                        { bg: '#27ae60', color: '#ffffff' }, // 녹색
+                        { bg: '#2980b9', color: '#ffffff' }, // 다크 블루
+                        { bg: '#f1c40f', color: '#2c3e50' }  // 노란
+                    ];
+                    
+                    const colorSet = colorPalettes[index % colorPalettes.length];
+                    
+                    setTimeout(() => {
+                        // 각 키보드에 다른 키 조합 마킹
+                        const keyPatterns = [
+                            ['q', 'w', 'e', 'r'], // QWER
+                            ['a', 's', 'd', 'f'], // ASDF
+                            ['1', '2', '3', '4'], // 숫자
+                            ['z', 'x', 'c', 'v'], // ZXCV
+                            ['space'], // 스페이스
+                            ['enter', 'backspace'], // 엔터/백스페이스
+                            ['ctrl', 'alt'], // 수식어 키
+                            ['f1', 'f2', 'f3'], // 펌션 키
+                            ['tab', 'capslock'], // 탭/캐스락
+                            ['shift'], // 시프트
+                            ['t', 'y', 'u', 'i'], // TYUI
+                            ['g', 'h', 'j', 'k'], // GHJK
+                            ['5', '6', '7', '8'], // 숫자 2
+                            ['b', 'n', 'm'] // BNM
+                        ];
+                        
+                        const keyPattern = keyPatterns[index % keyPatterns.length];
+                        kb.mark(keyPattern, colorSet);
+                        
+                        // 전역 이벤트 리스너 추가 (콘솔 로깅)
+                        kb.onpress((key) => {
+                            console.log(`타일 패널 ${index + 1} (크기: ${panel.className.match(/\b(tiny|small|medium|wide|tall|large|xlarge|mega|tower|banner|micro|nano|compact|standard)\b/)?.[0] || 'unknown'})에서 키 누름: ${key}`);
+                        });
+                        
+                    }, 500 + (index * 80)); // 순차적 렌더링
+                    
+                    // 인스턴스 저장
+                    modalKeyboardInstances.set(`tile-art-${index}`, kb);
+                    
+                } catch (error) {
+                    console.error(`타일 패널 ${index + 1} 키보드 생성 오류:`, error);
+                }
+            });
+            
+            // 완료 메시지 표시
+            setTimeout(() => {
+                alert(`🎨 타일 아트 모달이 완성되었습니다!\n\n총 ${panels.length}개의 다양한 크기 패널에 키보드가 렌더링되었습니다.\n\nKeyBoard 생성자에서 자동으로 컨테이너 스타일을 적용했습니다.\n\n다양한 크기와 비율의 패널에서 키보드가 어떻게 적응되는지 확인해보세요!`);
+            }, 2500);
+        }
+        
+        function openMultiPanelModal() {
+            // Multi-Panel 버튼을 타일아트 모달로 매핑
+            openTileArtModal();
+        }
+        
+        function openTileArtModalDirect() {
+            // 기존 모달 제거
+            removeModal();
+            
+            // 모달 오버레이 생성
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay modal-tile-art';
+            overlay.innerHTML = `
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h2 class="modal-title">🎨 타일 아트 멀티 패널</h2>
+                        <button class="modal-close" onclick="removeModal()">×</button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="modal-info">다양한 크기와 비율의 14개 패널 - 타일 예술 작품처럼 배치된 레이아웃에서 KeyBoard 자동 스타일링 테스트</div>
+                        <div class="tile-art-grid">
+                            <div class="keyboard-panel tiny" data-label="Mini">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel small" data-label="Small">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel medium" data-label="Medium">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel tall" data-label="Tall">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel micro" data-label="Micro">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel tower" data-label="Tower">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel wide" data-label="Wide">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel large" data-label="Large">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel compact" data-label="Compact">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel mega" data-label="Mega">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel banner" data-label="Banner">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel xlarge" data-label="XLarge">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel standard" data-label="Standard">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                            <div class="keyboard-panel nano" data-label="Nano">
+                                <!-- 여기에 키보드가 자동으로 렌더링됨 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 모달 오버레이 이벤트 리스너 (외부 클릭 시 닫기)
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    removeModal();
+                }
+            });
+            
+            document.body.appendChild(overlay);
+            
+            // 애니메이션 효과를 위해 약간 딸래이
+            setTimeout(() => {
+                overlay.classList.add('active');
+            }, 10);
+            
+            // ESC 키 이벤트 리스너
+            const handleEsc = (e) => {
+                if (e.key === 'Escape') {
+                    removeModal();
+                    document.removeEventListener('keydown', handleEsc);
+                }
+            };
+            document.addEventListener('keydown', handleEsc);
+            
+            // 타일 아트 패널에 키보드 생성
+            setTimeout(() => {
+                createTileArtKeyboards();
+            }, 400);
+        }
+        
+        function createMultiPanelKeyboards() {
+            // .keyboard-panel 클래스를 가진 모든 요소에 키보드 생성
+            const panels = document.querySelectorAll('.keyboard-panel');
+            
+            panels.forEach((panel, index) => {
+                // 각 패널에 고유 ID 부여
+                panel.id = `keyboard-panel-${index}`;
+                
+                try {
+                    // KeyBoard 인스턴스 생성 (자동 스타일링 테스트)
+                    const kb = new KeyBoard(`#keyboard-panel-${index}`);
+                    
+                    // 각 키보드에 다른 색상의 마킹 적용
+                    const colors = [
+                        { bg: '#e74c3c', color: '#ffffff' }, // 빨간
+                        { bg: '#3498db', color: '#ffffff' }, // 파란
+                        { bg: '#2ecc71', color: '#ffffff' }, // 초록
+                        { bg: '#f39c12', color: '#ffffff' }, // 주황
+                        { bg: '#9b59b6', color: '#ffffff' }  // 보라
+                    ];
+                    
+                    const colorSet = colors[index % colors.length];
+                    
+                    setTimeout(() => {
+                        // 각 키보드에 다른 키 조합 마킹
+                        const keyGroups = [
+                            ['q', 'w', 'e', 'r'],
+                            ['a', 's', 'd', 'f'],
+                            ['1', '2', '3', '4'],
+                            ['z', 'x', 'c', 'v'],
+                            ['space', 'enter']
+                        ];
+                        
+                        const keyGroup = keyGroups[index % keyGroups.length];
+                        kb.mark(keyGroup, colorSet);
+                        
+                        // 전역 이벤트 리스너 추가 (콘솔 로깅)
+                        kb.onpress((key) => {
+                            console.log(`패널 ${index + 1}에서 키 누름: ${key}`);
+                        });
+                        
+                    }, 500 + (index * 100)); // 순차적 렌더링
+                    
+                    // 인스턴스 저장
+                    modalKeyboardInstances.set(`panel-${index}`, kb);
+                    
+                } catch (error) {
+                    console.error(`패널 ${index + 1} 키보드 생성 오류:`, error);
+                }
+            });
+            
+            // 메시지 표시
+            setTimeout(() => {
+                alert(`총 ${panels.length}개 패널에 키보드가 렌더링되었습니다!\n\nKeyBoard 생성자에서 자동으로 컨테이너 스타일을 적용했습니다.\n\n다양한 크기의 패널에서 키보드가 어떻게 적응되는지 확인해보세요!`);
+            }, 2000);
+        }
     </script>
 </body>
 </html>
+ 
